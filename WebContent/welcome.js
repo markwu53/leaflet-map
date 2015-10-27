@@ -24,3 +24,9 @@ L.circle([40.71, -74], 500, {
     fillColor: '#f03',
     fillOpacity: 0.5
 }).addTo(map);
+
+L.polygon([
+	[40.68, -74],
+	[40.71, -74],
+	[40.695, -74.05]
+]).addTo(map);
