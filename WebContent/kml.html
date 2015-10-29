@@ -19,9 +19,9 @@
 <script>
 L.mapbox.accessToken = 'pk.eyJ1IjoibWFya3d1NTMiLCJhIjoiY2lnNDk5YW1tMmg1M3VqbHZzcXRocjR0cCJ9.p1U0uW9MVHQ09RDb0sI00Q';
 var map = L.mapbox.map('map', 'markwu53.cig49999a2h79t9kvlnpu37n5', {
-    center: [38.927, -77.02],
+    //center: [38.927, -77.02],
     //center: [51.505, -0.09],
-    //center: [37.82, -122.36],
+    center: [37.82, -122.36],
     zoom: 12
 });
 
@@ -33,7 +33,7 @@ var map = L.mapbox.map('map', 'markwu53.cig49999a2h79t9kvlnpu37n5', {
 
 // Internally this uses the toGeoJSON library to decode the KML file
 // into GeoJSON
-var runLayer = omnivore.kml('line.kml')
+var runLayer = omnivore.kml('KML_Samples.kml')
     .on('ready', function() {
         map.fitBounds(runLayer.getBounds());
     })
