@@ -35,7 +35,10 @@ var map = L.mapbox.map('map', 'markwu53.cig49999a2h79t9kvlnpu37n5', {
 // into GeoJSON
 var runLayer =
 	//omnivore.kml('KML_Samples.kml')
-	omnivore.kml('resources/WorkingTracks/kml/2015-09-09_15_46_52.kml')
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-09_15_46_52.kml')
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-10_19_54_02.kml')
+	//omnivore.kml('resources/WorkingTracks/kml/singletrack.kml')
+	omnivore.kml('resources/WorkingTracks/kml/track2.kml')
 	.on('ready', function() {
             map.fitBounds(runLayer.getBounds());
         })

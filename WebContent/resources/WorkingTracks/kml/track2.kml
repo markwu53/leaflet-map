@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2"><Document><name>Track 1</name><open>1</open><StyleMap id="multiTrack"><Pair><key>normal</key><styleUrl>#multiTrack_n</styleUrl></Pair><Pair><key>highlight</key><styleUrl>#multiTrack_h</styleUrl></Pair></StyleMap><Style id="multiTrack_n"><IconStyle><Icon><href>http://earth.google.com/images/kml-icons/track-directional/track-0.png</href></Icon></IconStyle><LineStyle><color>99ffac59</color><width>6</width></LineStyle></Style><Style id="multiTrack_h"><IconStyle><scale>1.2</scale><Icon><href>http://earth.google.com/images/kml-icons/track-directional/track-0.png</href></Icon></IconStyle><LineStyle><color>99ffac59</color><width>8</width></LineStyle></Style><Schema id="schema"><gx:SimpleArrayField name="speedr" type="float"><displayName>Speed-R</displayName></gx:SimpleArrayField></Schema><LookAt><gx:TimeSpan><begin>2015-09-10T11:28:53.02Z</begin><end>2015-09-10T13:54:44.85Z</end></gx:TimeSpan><longitude>-83.146948</longitude><latitude>40.156886</latitude><altitude>275.000000</altitude><heading>0</heading><tilt>0</tilt><range>4000.000000</range><gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode></LookAt><Placemark><name>Track 1</name><description>10-Sep-15 07:28:53 -> 10-Sep-15 09:54:44</description><styleUrl>#multiTrack</styleUrl><gx:Track>
+<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+<Document><name>Track 1</name><open>1</open><StyleMap id="multiTrack">
+<Pair><key>normal</key><styleUrl>#multiTrack_n</styleUrl></Pair>
+<Pair><key>highlight</key><styleUrl>#multiTrack_h</styleUrl></Pair></StyleMap>
+<Style id="multiTrack_n"><IconStyle><Icon><href>http://earth.google.com/images/kml-icons/track-directional/track-0.png</href></Icon></IconStyle>
+<LineStyle><color>99ffac59</color><width>6</width></LineStyle></Style>
+<Style id="multiTrack_h"><IconStyle><scale>1.2</scale>
+<Icon><href>http://earth.google.com/images/kml-icons/track-directional/track-0.png</href></Icon></IconStyle>
+<LineStyle><color>99ffac59</color><width>8</width></LineStyle></Style>
+<Schema id="schema"><gx:SimpleArrayField name="speedr" type="float">
+<displayName>Speed-R</displayName></gx:SimpleArrayField></Schema>
+<LookAt><gx:TimeSpan><begin>2015-09-10T11:28:53.02Z</begin><end>2015-09-10T13:54:44.85Z</end></gx:TimeSpan>
+<longitude>-83.146948</longitude><latitude>40.156886</latitude><altitude>275.000000</altitude>
+<heading>0</heading><tilt>0</tilt><range>4000.000000</range><gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode></LookAt>
+<Placemark><name>Track 1</name><description>10-Sep-15 07:28:53 -> 10-Sep-15 09:54:44</description>
+<styleUrl>#multiTrack</styleUrl>
+<gx:Track>
 <when>2015-09-10T11:29:50.16Z</when>
 <when>2015-09-10T11:30:03.15Z</when>
 <when>2015-09-10T11:30:15.23Z</when>
@@ -1499,7 +1515,9 @@
 <gx:coord>-84.509343 39.099307 160.20</gx:coord>
 <gx:coord>-84.509330 39.099358 160.90</gx:coord>
 <gx:coord>-84.509332 39.099306 161.40</gx:coord>
-<ExtendedData><SchemaData schemaUrl="#schema"><gx:SimpleArrayData name="speedr"><gx:value>1.90</gx:value>
+<ExtendedData><SchemaData schemaUrl="#schema">
+<gx:SimpleArrayData name="speedr">
+<gx:value>1.90</gx:value>
 <gx:value>9.04</gx:value>
 <gx:value>25.10</gx:value>
 <gx:value>29.12</gx:value>
@@ -2249,4 +2267,5 @@
 <gx:value>8.19</gx:value>
 <gx:value>7.02</gx:value>
 <gx:value>3.69</gx:value>
-</gx:SimpleArrayData></SchemaData></ExtendedData></gx:Track></Placemark></Document></kml>
+</gx:SimpleArrayData>
+</SchemaData></ExtendedData></gx:Track></Placemark></Document></kml>
