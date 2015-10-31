@@ -33,10 +33,12 @@ var map = L.mapbox.map('map', 'markwu53.cig49999a2h79t9kvlnpu37n5', {
 
 // Internally this uses the toGeoJSON library to decode the KML file
 // into GeoJSON
-var runLayer = omnivore.kml('KML_Samples.kml')
-    .on('ready', function() {
-        map.fitBounds(runLayer.getBounds());
-    })
+var runLayer =
+	//omnivore.kml('KML_Samples.kml')
+	omnivore.kml('resources/WorkingTracks/kml/2015-09-09_15_46_52.kml')
+	.on('ready', function() {
+            map.fitBounds(runLayer.getBounds());
+        })
     .addTo(map);
 </script>
 </body>
