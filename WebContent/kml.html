@@ -34,11 +34,25 @@ var map = L.mapbox.map('map', 'markwu53.cig49999a2h79t9kvlnpu37n5', {
 // Internally this uses the toGeoJSON library to decode the KML file
 // into GeoJSON
 var runLayer =
-	//omnivore.kml('KML_Samples.kml')
+	//omnivore.kml('KML_Samples.kml') -- not trip
 	//omnivore.kml('resources/WorkingTracks/kml/2015-09-09_15_46_52.kml')
-	//omnivore.kml('resources/WorkingTracks/kml/2015-09-10_19_54_02.kml')
-	//omnivore.kml('resources/WorkingTracks/kml/singletrack.kml')
-	omnivore.kml('resources/WorkingTracks/kml/track2.kml')
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-10_19_54_02.kml') -- same as 4
+	//omnivore.kml('resources/WorkingTracks/kml/track2.kml')
+	//omnivore.kml('resources/WorkingTracks/kml/track3.kml') -- same as 2
+	//omnivore.kml('resources/WorkingTracks/kml/track4.kml')
+	//omnivore.kml('resources/WorkingTracks/kml/track5.kml')
+	//omnivore.kml('resources/WorkingTracks/kml/track6.kml') -- same as 2
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-09_15_46_52.kml') -- a point
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-10_07_28_06.kml') -- too short
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-10_07_29_45.kml') -- same as 2
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-10_15_16_32.kml')
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-10_17_59_14.kml')
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-10_19_54_02.kml') -- same as 4
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-11_09_18_33.kml')
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-11_15_22_46.kml') -- same as above
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-12_13_53_50.kml')
+	//omnivore.kml('resources/WorkingTracks/kml/2015-09-12_19_57_45.kml')
+	omnivore.kml('resources/WorkingTracks/kml/2015-09-14_09_48_18.kml')
 	.on('ready', function() {
             map.fitBounds(runLayer.getBounds());
         })
