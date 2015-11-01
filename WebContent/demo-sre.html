@@ -1,0 +1,482 @@
+<html ng-app="srrest">
+<head>
+<title>SR HBase Rest</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://getbootstrap.com/dist/js/bootstrap.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
+<script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.js"></script>
+
+<!-- <link rel="stylesheet" href="rest.css" /> -->
+<style>
+.my-container {
+	background-color: #f5f5f5;
+	padding: 20px;
+	width: 1200px;
+	min-height: 100%;
+}
+
+.input-area {
+	width: 100%;
+}
+
+input {
+	width: 200px;
+	height: 40px;
+	padding-left: 10px;
+}
+
+.result-area {
+	width: 100%;
+	min-height: 80%;
+	padding: 10px;
+	margin-top: 20px;
+	border: 1px solid;
+}
+
+.result-test {
+	display: none;
+}
+
+.result-vin {
+	display: none;
+}
+
+.result-day {
+	display: none;
+}
+
+.result-error {
+	display: none;
+}
+
+.result-loading {
+	display: none;
+}
+
+.view-detail {
+	cursor: pointer;
+}
+table {
+	width: 100%;
+}
+tr {
+	border: 1px solid;
+	border-color: #dddddd;
+}
+th {
+	text-align: center;
+	height: 35px;
+}
+td {
+	text-align: center;
+	height: 25px;
+}
+
+.display-inline {
+	display: inline;
+}
+.trip-tabular {
+/* 	display: none; */
+	margin-top: 20px;
+}
+.trip-graph {
+	margin-top: 20px;
+	height: 400px;
+	border: 1px solid red;
+}
+.trip-graph svg {
+	height: 400px;
+	border: 1px solid red;
+}
+
+</style>
+
+<!-- <script src="rest.js"></script> -->
+<script>
+var app = angular.module("srrest", [ "ui.bootstrap" ]);
+
+app.directive("myGraph", function() {
+        return {
+                link: function(scope, element) {
+                        if (scope.tripMinuteData.length < 6) {
+                                $(element).hide();
+                        } else {
+                                prepareGraph(scope.tripMinuteData);
+                        }
+                }
+        };
+});
+
+app.controller("modalController", function($scope, $modalInstance, tripMinuteData) {
+        $scope.tripMinuteHeaders = [ "Start Time", "End Time", "Trip Miles", "Fast Accelerations", "Hard Brakes", "Speed MPH" ];
+        $scope.tripMinuteData = tripMinuteData;
+        $scope.cancel = function() {
+                $modalInstance.dismiss("cancel");
+        };
+});
+
+app.controller("srcontroller", function($scope, $http, $modal) {
+        $scope.tripHeaders = [ "Trip Start Time", "Trip End Time", "Trip Miles", "Fast Accelerations",
+                        "Hard Brakes",
+                        // "Night Time Drive Minutes"
+                        "Night Time" ];
+        $scope.vinNumber = "";
+        $scope.queryButton = function() {
+                if ($scope.vinNumber == "") {
+                        alert("Vin Number is required.");
+                        return;
+                }
+                getVinData($scope.vinNumber);
+        };
+        $scope.tripMinuteDetail = function(tripKey) {
+        	//logback(tripKey);
+                //var splits = tripKey.split("TRP");
+                var splits = tripKey.split("~");
+                //var restUrl = "http://nwbidevrest.nwie.net:9080/smart.sre_vin_all_hbase_underscore/" + splits[0] + "MIN" + splits[1] + "*";
+                var restUrl = "trip-data?vin=" + splits[0] + "&trip=" + splits[1];
+                $http({
+                        "url" : restUrl,
+                        "headers" : {
+                                "Accept" : "application/json"
+                        }
+                }).error(function() {
+                }).success(function(json) {
+                        var minuteData = transformMinuteData(json);
+                        $modal.open({
+                                templateUrl : "modal.html",
+                                controller : "modalController",
+                                backdrop: "static",
+                                size: "lg",
+                                resolve: {
+                                        tripMinuteData: function() {
+                                                return minuteData;
+                                        }
+                                }
+                        });
+                });
+        };
+
+        function logback(value) {
+                $http({
+                        "url" : "logback?value=" + value
+                });
+        }
+
+        function getVinData(vin, tripDate) {
+                // var restUrl =
+                // "http://nwbidevrest.nwie.net:9080/alex_sr.sre_trip_info_hbase/0000003*";
+                // url =
+                // "http://nwbidevrest.nwie.net:9080/smart.sre_vin_all_hbase_underscore/19UUA56623A010696_TRP_*";
+                // 19UUA9F71DA000159
+                //var restUrl = "http://nwbidevrest.nwie.net:9080/smart.sre_vin_all_hbase_underscore/" + vin + "_TRP_*";
+                var restUrl = "vin-data?vin=" + vin;
+                $http({
+                        "url" : restUrl,
+                        "headers" : {
+                                "Accept" : "application/json"
+                        }
+                }).success(function(json) {
+                        var vinData = transformVinData(json);
+                        //logback("after");
+                        if (tripDate === undefined) {
+                                $scope.vinData = vinData;
+                                showResult();
+                        } else {
+                                var ind;
+                                for (ind = 0; ind < vinData.length; ind++) {
+                                        if (tripDate == vinData[ind].date) {
+                                                break;
+                                        }
+                                }
+                                if (ind == vinData.length) {
+                                        $scope.errorMessage = "no data.";
+                                        showError();
+                                } else {
+                                        $scope.trips = vinData[ind].data;
+                                        showDay();
+                                }
+                        }
+                }).error(function() {
+                        $scope.errorMessage = "not found.";
+                        showError();
+                });
+        }
+
+
+function transformMinuteData(json) {
+        var tripMinuteData = [];
+        $.each(json.Row, function(index, row) {
+                var startTime = "";
+                var endTime = "";
+                var fastAccel = "";
+                var hardBrakes = "";
+                var miles = "";
+                var speed = "";
+                var rowKey = atob(row.key);
+                $.each(row.Cell, function(colIndex, column) {
+                        var name = atob(column.column);
+                        var value = atob(column.$);
+                        // var timestamp = column.timestamp;
+                        var name2 = name.split(":")[1];
+                        if (name2 == "trip_start_timestamp") {
+                                startTime = value.split(" ")[1].split(".")[0];
+                        } else if (name2 == "trip_end_timestamp") {
+                                endTime = value.split(" ")[1].split(".")[0];
+                        } else if (name2 == "fast_accel_count") {
+                                fastAccel = value;
+                        } else if (name2 == "hard_break_count") {
+                                hardBrakes = value;
+                        } else if (name2 == "miles_driven") {
+                                miles = Number(value).toFixed(2);
+                        } else if (name2 == "speed_in_mp") {
+                                speed = Number(value).toFixed(1);
+                        }
+                });
+                var oneRow = [ startTime, endTime, miles, fastAccel, hardBrakes, speed ];
+                tripMinuteData.push({
+                        "key" : rowKey,
+                        "data" : oneRow
+                });
+        });
+        tripMinuteData.sort(function(a, b) {
+                if (a.data[0] < b.data[0]) {
+                        return -1;
+                }
+                if (a.data[0] > b.data[0]) {
+                        return 1;
+                }
+                return 0;
+        });
+        return tripMinuteData;
+}
+
+function transformVinData(json) {
+        var vinData = [];
+        $.each(json.Row, function(index, row) {
+                var tripDate = "";
+                var tripStartTime = "";
+                var tripEndTime = "";
+                var tripFastAccel = "";
+                var tripHardBrakes = "";
+                var tripMiles = "";
+                var tripNightMin = "";
+                var tripNumber = "";
+                var rowKey = atob(row.key);
+                //logback(rowKey);
+                if (rowKey.length != "0507011~2076011031404815382".length) {
+                	return;
+                }
+                $.each(row.Cell, function(colIndex, column) {
+                        var name = atob(column.column);
+                        var value = atob(column.$);
+                        //logback(name + ":" + value);
+                        // var timestamp = column.timestamp;
+                        var name2 = name.split(":")[1];
+                        if (name2 == "trip_start_timestamp") {
+                                tripDate = value.split(" ")[0];
+                                tripStartTime = value.split(" ")[1].split(".")[0];
+                        } else if (name2 == "trip_end_timestamp") {
+                                tripEndTime = value.split(" ")[1].split(".")[0];
+                        } else if (name2 == "fast_accel_count") {
+                                tripFastAccel = value;
+                        } else if (name2 == "hard_break_count") {
+                                tripHardBrakes = value;
+                        } else if (name2 == "miles_driven") {
+                                tripMiles = Number(value).toFixed(2);
+                        } else if (name2 == "night_time") {
+                                tripNightMin = value;
+                        } else if (name2 == "trip_number") {
+                                tripNumber = value;
+                        }
+                });
+                var oneRow = [ tripStartTime, tripEndTime, tripMiles, tripFastAccel, tripHardBrakes, tripNightMin ];
+                //logback(tripDate + "->" + oneRow);
+                var dateExists = false;
+                for (var ind = 0; ind < vinData.length; ind++) {
+                        var day = vinData[ind];
+                        if (day.date == tripDate) {
+                                day.data.push({
+                                        "key" : rowKey,
+                                        "number" : tripNumber,
+                                        "data" : oneRow
+                                });
+                                dateExists = true;
+                                break;
+                        }
+                }
+                if (!dateExists) {
+                        vinData.push({
+                                "date" : tripDate,
+                                "data" : [ {
+                                        "key" : rowKey,
+                                        "number" : tripNumber,
+                                        "data" : oneRow
+                                } ]
+                        });
+                }
+        });
+        for (var ind = 0; ind < vinData.length; ind++) {
+                vinData[ind].data.sort(function(a, b) {
+                        if (a[0] < b[0]) {
+                                return -1;
+                        }
+                        if (a[0] > b[0]) {
+                                return 1;
+                        }
+                        return 0;
+                });
+        }
+        vinData.sort(function(a, b) {
+                if (a.date < b.date) {
+                        return 1;
+                }
+                if (a.date > b.date) {
+                        return -1;
+                }
+                return 0;
+        });
+        return vinData;
+}
+
+        
+        
+});
+
+function loading() {
+        $(".result-loading").show();
+        $(".result-vin").hide();
+        $(".result-day").hide();
+        $(".result-error").hide();
+}
+
+function showResult() {
+        $(".result-loading").hide();
+        $(".result-vin").show();
+        $(".result-day").hide();
+        $(".result-error").hide();
+}
+
+function showError() {
+        $(".result-loading").hide();
+        $(".result-vin").hide();
+        $(".result-day").hide();
+        $(".result-error").show();
+}
+
+function prepareGraph(minuteData) {
+        nv.addGraph(function() {
+                var chart = nv.models.lineChart().margin({
+                        left : 100
+                }).useInteractiveGuideline(true).transitionDuration(350).showLegend(true).showXAxis(true).showYAxis(
+                        true);
+
+                chart.xAxis.axisLabel("Minute Ending Time")
+                // .tickFormat(d3.format(",r"))
+                .tickFormat(function(d) {
+                        return minuteData[d].data[1];
+                });
+                chart.yAxis.axisLabel("Speed (MPH)").tickFormat(d3.format(".02f"));
+                chart.forceY(0);
+
+                d3.select(".trip-graph svg").datum(graphData(minuteData)).call(chart);
+
+                /*
+                 * nv.utils.windowResize(function() { chart.update(); });
+                 */
+                return chart;
+        });
+}
+
+function graphData(minuteData) {
+        var points = [];
+        $.each(minuteData, function(i, item) {
+                var speed = +item.data[5];
+                points.push({
+                        x : i,
+                        y : speed
+                });
+        });
+        return [ {
+                key : "Speed",
+                // color: red,
+                values : points,
+                color : "#7777ff",
+                area : true
+        } ];
+}
+</script>
+
+<script type="text/ng-template" id="modal.html">
+        <div class="modal-header">
+                <h4 class="modal-title display-inline">Trip minute-by-minute details:</h4>
+                <button class="btn btn-warning pull-right" ng-click="cancel()">Close</button>
+        </div>
+        <div class="modal-body minute-detail-area">
+                <div my-graph class="trip-graph">
+                        <svg></svg>
+                </div>
+                <div class="trip-tabular">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th ng-repeat="title in tripMinuteHeaders">{{title}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="minute in tripMinuteData">
+                                    <td ng-repeat="column in minute.data track by $index">{{column}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                </div>
+        </div>
+</script>
+</head>
+<body>
+    <div class="container my-container" ng-controller="srcontroller">
+        <div class="span4 input-area">
+            <input type="text" class="" placeholder="Vin Number" ng-model="vinNumber" />
+<!--             <input type="text" class="" placeholder="yyyy-mm-dd (Optional)" ng-model="tripDate" /> -->
+            <button class="btn btn-primary" ng-click="queryButton()">Query Trips</button>
+            <div class="message"></div>
+        </div>
+        <div class="result-area">
+            <div class="result-loading">
+<!--                 <img src="img/loading_bar.gif"> -->
+                <h1>Loading...</h1>
+            </div>
+            <div class="result-error">{{errorMessage}}</div>
+            <div class="result-vin">
+                <accordion close-others="false">
+                    <accordion-group ng-repeat="day in vinData">
+                        <accordion-heading>
+                            <div class="my-accordion-heading"> {{day.date}} </div>
+                        </accordion-heading>
+                        <table>
+                            <thead>
+                                <tr> 
+                                    <th></th>
+                                    <th ng-repeat="title in tripHeaders">{{title}}</th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="trip in day.data"> 
+                                    <td>
+                                        <img ng-click="tripMinuteDetail(trip.key)"
+                                        class="view-detail" title="view details" alt="view details" src="view.png">
+                                    </td>
+                                    <td ng-repeat="column in trip.data track by $index">{{column}}</td> 
+                                </tr>
+                            </tbody>
+                        </table>
+                    </accordion-group>
+                </accordion>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
