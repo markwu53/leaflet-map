@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html ng-app="carmap">
+<head>
+<title>Taxi KML</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://getbootstrap.com/dist/js/bootstrap.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
+<script src="https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css" />
+<script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js"></script>
+<style>
+  body { margin:0px; padding:0px; }
+  #map { position:absolute; top:40px; bottom:0px; width:100%; }
+</style>
+<script>
+    var map;
+
+    angular.module("carmap", [ "ui.bootstrap" ]).controller("myController", function($scope, $http, $modal) {
+        $scope.medallion = "0B3D3D51C78E944F68DC04209E86D5F7";
+        $scope.pickupTime = "2013-01-13 09:14:00";
+        $scope.sayHello = function() {
+            alert($scope.pickupTime);
+        };
+        $scope.getTripDetail = function(medallion, pickupTime) {
+            $http({
+                url : "trip-data?vin=" + medallion + "&pickupTime=" + pickupTime
+            }).error(function(error) {
+                alert("error");
+            }).success(function(json) {
+                var kmlData = atob(json.Row[0].Cell[0].$);
+                var runLayer = omnivore.kml.parse(kmlData);
+                map.fitBounds(runLayer.getBounds());
+                runLayer.addTo(map);
+            });
+        };
+    });
+
+    $(document).ready(function() {
+        L.mapbox.accessToken = 'pk.eyJ1IjoibWFya3d1NTMiLCJhIjoiY2lnNDk5YW1tMmg1M3VqbHZzcXRocjR0cCJ9.p1U0uW9MVHQ09RDb0sI00Q';
+        map = L.mapbox.map('map', 'markwu53.cig49999a2h79t9kvlnpu37n5', { center: [39.87, -83.05], zoom: 9 });
+    });
+</script>
+
+</head>
+<body>
+    <div class="container my-container" ng-controller="myController">
+        <div class="result-area">
+            <div class="result-vin">
+                Medallion: {{medallion}}
+                Pickup time:
+                <a href="" ng-click="getTripDetail(medallion, pickupTime)">
+                {{pickupTime}}
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id='map'></div>
+</body>
+</html>

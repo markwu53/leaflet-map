@@ -20,7 +20,8 @@ import org.apache.http.util.EntityUtils;
 public class DemoMapServlet extends HttpServlet {
         private static final long serialVersionUID = 1L;
 
-        private String hbaseServer = "192.168.1.114";
+        //private String hbaseServer = "192.168.1.114";
+        private String hbaseServer = "sandbox.hortonworks.com";
         private String hbasePort = "12345";
         private String tripInfoTable = "alex_sr.sre_trip_info_hbase";
         private String tripMinuteTable = "alex_sr.sre_trip_minute_aggregates_hbase";
@@ -28,6 +29,7 @@ public class DemoMapServlet extends HttpServlet {
         public DemoMapServlet() {
         }
 
+        @Override
         protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
                 String result = "";
                 String path = request.getServletPath();
@@ -37,9 +39,9 @@ public class DemoMapServlet extends HttpServlet {
                         result = getVinData(vin);
                 } else if (path.equals("/trip-data")) {
                         String vin = request.getParameter("vin");
-                        String trip = request.getParameter("trip");
-                        System.out.println("vin=" + vin + ",trip=" + trip);
-                        result = getVinTripData(vin, trip);
+                        String pickupTime = request.getParameter("pickupTime");
+                        System.out.println("vin=" + vin + ",pickupTime=" + pickupTime);
+                        result = getVinTripData(vin, pickupTime);
                 } else if (path.equals("/logback")) {
                         String value = request.getParameter("value");
                         System.out.println("[logback] " + value);
@@ -89,10 +91,14 @@ public class DemoMapServlet extends HttpServlet {
                 return result;
         }
 
-        private String getVinTripData(String vin, String trip) throws IOException {
+        private String getVinTripData(String vin, String pickupTime) throws IOException {
                 String result = null;
                 CloseableHttpClient httpclient = HttpClients.createDefault();
-                HttpGet httpGet = new HttpGet("http://" + hbaseServer + ":" + hbasePort + "/" + tripMinuteTable + "/" + vin + trip + "*");
+                String rowkey = vin + ":" + pickupTime;
+                String url = "http://" + hbaseServer + ":" + hbasePort + "/trip_ns:trip_table/" + rowkey + "/trip:detail";
+                url = url.replaceAll(" ", "%20");
+                HttpGet httpGet = new HttpGet(url);
+                //HttpGet httpGet = new HttpGet("http://" + hbaseServer + ":" + hbasePort + "/" + tripMinuteTable + "/" + vin + trip + "*");
                 //HttpGet httpGet = new HttpGet("http://192.168.1.114:12345/alex_sr.sre_trip_minute_aggregates_hbase/" + vin + trip + "*");
                 // http://192.168.1.114:12345/alex_sr.sre_trip_info_hbase/0507011~2121005091404781691
                 httpGet.setHeader("accept", "application/json");
@@ -105,6 +111,7 @@ public class DemoMapServlet extends HttpServlet {
                         response.close();
                 }
 
+                //System.out.println(result);
                 return result;
         }
 

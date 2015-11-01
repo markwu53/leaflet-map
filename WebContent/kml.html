@@ -53,10 +53,8 @@ var runLayer =
 	//omnivore.kml('resources/WorkingTracks/kml/2015-09-12_13_53_50.kml')
 	//omnivore.kml('resources/WorkingTracks/kml/2015-09-12_19_57_45.kml')
 	omnivore.kml('resources/WorkingTracks/kml/2015-09-14_09_48_18.kml')
-	.on('ready', function() {
-            map.fitBounds(runLayer.getBounds());
-        })
-    .addTo(map);
+	.on('ready', function() { map.fitBounds(runLayer.getBounds()); })
+        .addTo(map);
 </script>
 </body>
 </html>
