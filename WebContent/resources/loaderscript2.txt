@@ -1,0 +1,14 @@
+create_namespace 'trip_ns'
+create 'trip_ns:trip_table', {NAME => 'trip', VERSIONS => 1}, {NAME => 'fare', VERSIONS => 1}
+mkdir /opt/tripdata
+cd /opt/tripdata
+cp /root/git/leaflet-map/cars.csv .
+awk 'BEGIN {FS=OFS=","} {print $1":"$6,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14}' cars.csv > trip_data_1_key.csv
+hdfs dfs -mkdir /tripstaging
+hdfs dfs -copyFromLocal /opt/tripdata/trip_data_1_key.csv /tripstaging/
+hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator=, -Dimporttsv.columns=HBASE_ROW_KEY,trip:medallion,trip:hack_license,trip:vendor_id,trip:rate_code,trip:store_and_fwd_flag,trip:pickup_datetime,trip:dropoff_datetime,trip:passenger_count,trip:trip_time_in_secs,trip:trip_distance,trip:pickup_longitude,trip:pickup_latitude,trip:dropoff_longitude,trip:dropoff_latitude trip_ns:trip_table /tripstaging/trip_data_1_key.csv
+
+# insert random route files to trip:detail column
+
+get 'trip_ns:trip_table', '171FD91CBF0D6FABF499A9452A4950D5:2013-01-13 03:55:00'
+get 'trip_ns:trip_table', '0B3D3D51C78E944F68DC04209E86D5F7:2013-01-13 09:14:00'

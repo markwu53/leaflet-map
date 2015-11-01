@@ -38,30 +38,6 @@ hbase(main):006:0> create_namespace 'trip'
 
 02.0 Create 'trip:trip', {NAME => 'data',VERSIONS=>1},{NAME => 'fare',VERSIONS=>1}
 
-create_namespace 'trip_ns'
-create 'trip_ns:trip_table', {NAME => 'trip', VERSIONS => 1}, {NAME => 'fare', VERSIONS => 1}
-scan 'trip_ns:trip_table'
-put 'trip_ns:trip_table', 'car001:time001', 'trip:duration', '620'
-put 'trip_ns:trip_table', 'car001:time001', 'trip:passengerc_count', '2'
-put 'trip_ns:trip_table', 'car001:time001', 'trip:start_location', 'xxx'
-put 'trip_ns:trip_table', 'car001:time001', 'trip:end_location', 'yyy'
-put 'trip_ns:trip_table', 'car001:time002', 'trip:duration', '1123'
-put 'trip_ns:trip_table', 'car001:time002', 'trip:passengerc_count', '3'
-put 'trip_ns:trip_table', 'car001:time002', 'trip:start_location', 'Dublin'
-put 'trip_ns:trip_table', 'car001:time002', 'trip:end_location', 'Polaris'
-scan 'trip_ns:trip_table'
-get 'trip_ns:trip_table', 'car001:time001'
-curl http://sandbox.hortonworks.com:12345/trip_ns:trip_table/car001:time001
-http://sandbox.hortonworks.com:12345/trip_ns:trip_table/car001:time001
-http://sandbox.hortonworks.com:12345/trip_ns:trip_table/car001:time001/trip
-http://sandbox.hortonworks.com:12345/trip_ns:trip_table/car001:time001/trip:duration
-http://sandbox.hortonworks.com:12345/trip_ns:trip_table/car001:time001/trip:duration,trip:passengerc_count
-curl -H "Content-Type: text/xml" --data '1123' http://sandbox.hortonworks.com:12345/trip_ns:trip_table/car001:time002/trip:duration
-curl -v -X PUT http://sandbox.hortonworks.com:12345/trip_ns:trip_table/car001:time002/trip:duration -H "Content-Type: text/xml" -d '1123'
-curl -H "Content-Type: text/xml" --data '3' http://sandbox.hortonworks.com:12345/trip_ns:trip_table/car001:time002/trip:passengerc_count
-curl -H "Content-Type: text/xml" --data 'Dublin' http://sandbox.hortonworks.com:12345/trip_ns:trip_table/car001:time002/trip:start_location
-curl -H "Content-Type: text/xml" --data 'Polaris' http://sandbox.hortonworks.com:12345/trip_ns:trip_table/car001:time002/trip:end_location
-
 02.1 scan 'trip:trip'
 
 03.0 sed -i~ 1d trip_data_1.csv # removes the first line which has the column information
