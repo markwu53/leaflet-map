@@ -70,7 +70,7 @@ public class HBaseInsert {
                         
                         // this random number will permutation through the list of files
                         int random = Double.valueOf(Math.random() * files.size()).intValue();
-                        p.addColumn(Bytes.toBytes("trip"), Bytes.toBytes("detail'"), Bytes.toBytes(files.get(random)));
+                        p.addColumn(Bytes.toBytes("trip"), Bytes.toBytes("detail"), Bytes.toBytes(files.get(random)));
 
                         table.put(p);
                 }
