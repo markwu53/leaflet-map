@@ -15,12 +15,16 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
-public class HBaseInsert {
+public class HBaseInsertDetail {
         public static void main(String[] args) throws Exception {
-                new HBaseInsert().go();
+                new HBaseInsertDetail().go();
         }
  
         public void go() throws Exception {
+                insertDetail();
+        }
+
+        public void insertDetail() throws Exception {
                 //omnivore.kml('resources/WorkingTracks/kml/track2.kml')
                 //omnivore.kml('resources/WorkingTracks/kml/track4.kml')
                 //omnivore.kml('resources/WorkingTracks/kml/track5.kml')

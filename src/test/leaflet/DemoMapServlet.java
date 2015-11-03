@@ -37,6 +37,7 @@ public class DemoMapServlet extends HttpServlet {
                         String vin = request.getParameter("vin");
                         System.out.println("vin=" + vin);
                         result = getVinData(vin);
+                        //System.out.println(result);
                 } else if (path.equals("/trip-data")) {
                         String vin = request.getParameter("vin");
                         String pickupTime = request.getParameter("pickupTime");
@@ -75,7 +76,7 @@ public class DemoMapServlet extends HttpServlet {
         private String getVinData(String vin) throws IOException {
                 String result = null;
                 CloseableHttpClient httpclient = HttpClients.createDefault();
-                HttpGet httpGet = new HttpGet("http://" + hbaseServer + ":" + hbasePort + "/" + tripInfoTable + "/" + vin + "*");
+                HttpGet httpGet = new HttpGet("http://" + hbaseServer + ":" + hbasePort + "/trip_ns:trip_table/" + vin + ":/trip:total");
                 //HttpGet httpGet = new HttpGet("http://192.168.1.114:12345/alex_sr.sre_trip_info_hbase/" + vin + "*");
                 // http://192.168.1.114:12345/alex_sr.sre_trip_info_hbase/0507011~2121005091404781691
                 httpGet.setHeader("accept", "application/json");
