@@ -5,18 +5,6 @@ $(document).ready(function() {
 
 angular.module("carmap", [ "ui.bootstrap" ]).controller("myController", function($scope, $http, $modal) {
     $scope.tripHeaders = [ "Pickup Time", "Trip Duration in seconds", "Trip Miles", "Passenger Count", "Pickup Location", "Dropoff Location", "Route" ];
-    $scope.getTripDetail = function(medallion, pickupTime) {
-        $http({
-            url : "trip-data?vin=" + medallion + "&pickupTime=" + pickupTime
-        }).error(function(error) {
-            alert("error");
-        }).success(function(json) {
-            var kmlData = atob(json.Row[0].Cell[0].$);
-            var runLayer = omnivore.kml.parse(kmlData);
-            map.fitBounds(runLayer.getBounds());
-            runLayer.addTo(map);
-        });
-    };
     $scope.queryButton = function(medallion) {
         $http({
             url: "vin-data?vin=" + medallion
