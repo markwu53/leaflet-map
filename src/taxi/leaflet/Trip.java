@@ -1,4 +1,4 @@
-package test.leaflet;
+package taxi.leaflet;
 
 import java.util.HashMap;
 import java.util.Map;

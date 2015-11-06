@@ -1,4 +1,4 @@
-package test.leaflet;
+package taxi.leaflet.servlet;
 
 import java.io.IOException;
 import java.util.Map;

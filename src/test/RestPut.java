@@ -1,4 +1,4 @@
-package test.leaflet;
+package test;
 
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
